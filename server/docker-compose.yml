@@ -1,0 +1,57 @@
+version: '3'
+
+volumes:
+  pgdata:
+  static_files:
+  uploaded_files:
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/web/Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./main:/main
+      - static_files:/static_files
+      - uploaded_files:/uploaded_files
+    env_file:
+      - ./.envs/.web
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    command: gunicorn -w 1 web:flask_app -b :5000 --access-logfile '-'
+    container_name: recsys_web_2
+    restart: on-failure
+    
+  postgres:
+    image: postgres:9.6-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    env_file:
+      - ./.envs/.postgres
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    container_name: recsys_pg_2
+    restart: on-failure
+  
+  nginx:
+    container_name: nginx:1.18.0-alpine
+    build:
+      context: .
+      dockerfile: ./dockerfiles/nginx/Dockerfile
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    volumes:
+      - static_files:/static_files
+      - uploaded_files:/uploaded_files
+    depends_on:
+      - web
+    container_name: recsys_nginx_2
+    restart: on-failure
