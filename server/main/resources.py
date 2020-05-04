@@ -1,6 +1,7 @@
 import logging
 from flask_restful import Resource
 from flask import jsonify, request
+from utils.rec_handler import getMusic
 
 #loging
 logging.basicConfig(filename='logfiles.log',
@@ -11,17 +12,31 @@ logging.basicConfig(filename='logfiles.log',
 class Recommend(Resource):
     def get(self,song: str, artist:str=None, number:int=6):
 
+        musics = getMusic(song=song, artist=artist, k=number)
+
+        if musics:
+            rec_success = True
+        else:
+            rec_success = False
+
+        
+        #save to db
+        """try:
+        except Exception as e:
+                logging.error('Error! {}'.format(e))
+                return "Could not Save", 400"""
+
+
         if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
             ipp_address=request.environ['REMOTE_ADDR']
         else:
             ipp_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
         
         retJson = {
-            "ipp_address": ipp_address,
+            "ip_address": ipp_address,
             "status":200,
-            "song":song,
-            "artist":artist,
-            "number":number
+            "musics": musics,
+            "for": "music: {0}, artist: {1}".format(song, artist)
              }
     
         return jsonify(retJson)
