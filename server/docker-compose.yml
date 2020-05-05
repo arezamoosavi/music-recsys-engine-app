@@ -18,6 +18,8 @@ services:
       - uploaded_files:/uploaded_files
     env_file:
       - ./.envs/.web
+    environment:
+      - FLASK_APP=web.py
     depends_on:
       - postgres
     links:
@@ -85,6 +87,8 @@ services:
     command: celery worker -A utils.celery_tasks.main_app --loglevel=INFO
     env_file:
       - ./.envs/.web
+    environment:
+      - FLASK_APP=web.py
     volumes:
       - ./main:/main
     depends_on:

@@ -3,6 +3,7 @@ from flask_restful import Resource
 from flask import jsonify, request
 from utils.rec_handler import getMusic
 from utils.celery_tasks.tasks import async_recommend
+from models import MusicModel
 
 #loging
 logging.basicConfig(filename='logfiles.log',
@@ -34,6 +35,14 @@ class Recommend(Resource):
             ip_address=request.environ['REMOTE_ADDR']
         else:
             ip_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+        
+
+        new_musics = MusicModel(song=song, artist=artist, musics=musics, 
+                                ip=ip_address, state=rec_success)
+        try:
+            new_musics.save_to_db()
+        except:
+            return {"message": ERROR_INSERTING}, 400
         
         retJson = {
             "ip_address": ip_address,
