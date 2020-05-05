@@ -15,17 +15,16 @@ def getSongId(song, artist=None):
     
     if song_df.empty:
         return None
-    elif song_df.shape[0] >= 1 and not artist:
-        return song_df.index.values[0]
-    elif song_df.shape[0] > 1 and artist:
-        artist_df = look_for_artist(song_df, name=artist)
-        if artist_df.empty:
-            return song_df.index.values[0]
-        else:
-            return artist_df.index.values[0]
     else:
-        return None
-
+        if artist is None:
+            return song_df.index.values[0]
+        else:    
+            artist_df = look_for_artist(song_df, name=artist)
+            if artist_df.empty:
+                return song_df.index.values[0]
+            else:
+                return artist_df.index.values[0]
+    
 def getKMusic(scores, id, k):
     sorted_scores = sorted(((value, index) for index, value in enumerate(scores) if index!=id), reverse=False)
     return [sorted_scores[i][1] for i in range(k)]
@@ -39,3 +38,8 @@ def getDictResult(musics):
         res.append(d)
     return res
 
+def getMusicWithid(x):
+    # d = {'song' : music_df.song.iloc[x], 'artist' : music_df.artist.iloc[x],
+    #          'spotify_url' : 'https://open.spotify.com/track/{}'.format(music_df.spotify_id.iloc[x])}
+    d= [music_df.song.iloc[x], music_df.artist.iloc[x]]
+    return d

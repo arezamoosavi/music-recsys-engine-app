@@ -27,7 +27,9 @@ def getMusic(song, artist=None, k=6):
         
         list_of_musicid = getKMusic(list_of_score, id, k)
         
-        return getDictResult(list_of_musicid)
+        rec_musics = getDictResult(list_of_musicid)
+
+        return rec_musics, getMusicWithid(id)
         
     else:
         return None

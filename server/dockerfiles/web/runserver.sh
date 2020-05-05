@@ -7,9 +7,9 @@ set -o nounset
 
 echo "Migration started"
 
-# python web.py db init
-# python web.py db migrate
-# python web.py db upgrade
+# python manage.py db init
+# python manage.py db migrate
+# python manage.py db upgrade
 
 # flask db init
 # flask db migrate
@@ -20,4 +20,4 @@ sleep 1
 
 # run gunicorn
 gunicorn -w 1 web:flask_app -b 0.0.0.0:5000 --access-logfile '-' --workers ${GUNICORN_WORKERS} --timeout ${GUNICORN_TIMEOUT} $*
-# gunicorn -w 1 web:flask_app -b :5000 --access-logfile '-'
+# gunicorn -w 1 wsgi:app -b :5000 --access-logfile '-'

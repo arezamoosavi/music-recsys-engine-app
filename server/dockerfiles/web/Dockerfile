@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir Flask-Migrate
 RUN pip install --no-cache-dir Flask-Script
 RUN pip install --no-cache-dir flask-marshmallow==0.11.0 marshmallow \
         marshmallow-sqlalchemy
+RUN pip install --no-cache-dir sqlalchemy-migrate==0.7.2 
 RUN mkdir -p /main
 
 WORKDIR /main

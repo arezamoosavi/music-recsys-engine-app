@@ -17,19 +17,12 @@ class Recommend(Resource):
 
         # musics = getMusic(song=song, artist=artist, k=number)
         recTask = async_recommend.delay(song=song, artist=artist, k=number)
-        musics = recTask.wait(timeout=None, interval=0.5)
+        musics, called = recTask.wait(timeout=None, interval=0.5)
 
         if musics:
             rec_success = True
         else:
             rec_success = False
-
-        
-        #save to db
-        """try:
-        except Exception as e:
-                logging.error('Error! {}'.format(e))
-                return "Could not Save", 400"""
 
 
         if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
@@ -40,7 +33,7 @@ class Recommend(Resource):
         #agent
         user_agent = request.user_agent.string
 
-        new_musics = MusicModel(song=song, artist=artist, musics=musics, 
+        new_musics = MusicModel(song=called[0], artist=called[1], musics=musics, 
                                 state=rec_success, ip=ip_address, agent=user_agent)
         try:
             new_musics.save_to_db()
@@ -51,7 +44,7 @@ class Recommend(Resource):
             "ip_address": ip_address,
             "status":200,
             "musics": musics,
-            "for": "music: {0}, artist: {1}".format(song, artist)
+            "for": "music: {0}, artist: {1}".format(called[0], called[1])
              }
     
         return jsonify(retJson)

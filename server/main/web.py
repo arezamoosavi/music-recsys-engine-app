@@ -4,8 +4,7 @@ from flask_restful import Api, Resource
 from resources import Recommend, SearchHistory
 from db import db, DATABASE_URI
 from ma import ma
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+from flask_migrate import Migrate
 from flask_admin import Admin 
 from flask_admin.contrib.sqla import ModelView
 from models import MusicModel
@@ -24,10 +23,8 @@ flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(flask_app)
 ma.init_app(flask_app)
-migrate = Migrate(flask_app, db)
 
-manager = Manager(flask_app)
-manager.add_command('db', MigrateCommand)
+migrate = Migrate(flask_app, db)
 
 
 @flask_app.before_first_request
@@ -44,6 +41,3 @@ api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:numbe
                             '/recommend/<string:song>/<string:artist>',
                             '/recommend/<string:song>')
 api.add_resource(SearchHistory, '/')
-
-if __name__ == '__main__':
-    manager.run()
