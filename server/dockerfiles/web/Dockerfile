@@ -19,6 +19,8 @@ RUN pip install --no-cache-dir -r /requirements.txt
 RUN pip install --no-cache-dir celery[redis] amqp redis celery==4.4.2
 RUN pip install --no-cache-dir Flask-Migrate
 RUN pip install --no-cache-dir Flask-Script
+RUN pip install --no-cache-dir flask-marshmallow==0.11.0 marshmallow \
+        marshmallow-sqlalchemy
 RUN mkdir -p /main
 
 WORKDIR /main

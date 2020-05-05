@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from resources import Recommend, SearchHistory
 from db import db, DATABASE_URI
+from ma import ma
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_admin import Admin 
@@ -22,6 +23,7 @@ flask_app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(flask_app)
+ma.init_app(flask_app)
 migrate = Migrate(flask_app, db)
 
 manager = Manager(flask_app)
