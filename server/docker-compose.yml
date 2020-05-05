@@ -55,3 +55,44 @@ services:
       - web
     container_name: recsys_nginx_2
     restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:3.8.3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"
+    hostname: rabbitmq
+    container_name: recsys_rmq_2
+    restart: on-failure
+
+  redis:
+    image: redis:5.0.5
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    command: [ "redis-server", "--protected-mode", "no" ]
+    hostname: redis
+    container_name: recsys_redis_2
+    restart: on-failure
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/web/Dockerfile
+    command: celery worker -A utils.celery_tasks.main_app --loglevel=INFO
+    env_file:
+      - ./.envs/.web
+    volumes:
+      - ./main:/main
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    links:
+      - rabbitmq
+      - redis
+    container_name: recsys_celery_2
+    restart: on-failure

@@ -2,6 +2,7 @@ import logging
 from flask_restful import Resource
 from flask import jsonify, request
 from utils.rec_handler import getMusic
+from utils.celery_tasks.tasks import async_recommend
 
 #loging
 logging.basicConfig(filename='logfiles.log',
@@ -12,7 +13,9 @@ logging.basicConfig(filename='logfiles.log',
 class Recommend(Resource):
     def get(self,song: str, artist:str=None, number:int=6):
 
-        musics = getMusic(song=song, artist=artist, k=number)
+        # musics = getMusic(song=song, artist=artist, k=number)
+        recTask = async_recommend.delay(song=song, artist=artist, k=number)
+        musics = recTask.wait(timeout=None, interval=0.5)
 
         if musics:
             rec_success = True
@@ -28,12 +31,12 @@ class Recommend(Resource):
 
 
         if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-            ipp_address=request.environ['REMOTE_ADDR']
+            ip_address=request.environ['REMOTE_ADDR']
         else:
-            ipp_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+            ip_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
         
         retJson = {
-            "ip_address": ipp_address,
+            "ip_address": ip_address,
             "status":200,
             "musics": musics,
             "for": "music: {0}, artist: {1}".format(song, artist)
