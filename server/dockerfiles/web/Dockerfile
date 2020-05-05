@@ -18,6 +18,7 @@ COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
 RUN pip install --no-cache-dir faust faust[uvloop,fast,rocksdb,redis]
+RUN pip install --no-cache-dir asyncio asgiref syncer
 
 RUN mkdir -p /main
 
