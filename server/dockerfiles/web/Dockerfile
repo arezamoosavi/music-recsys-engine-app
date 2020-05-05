@@ -18,11 +18,15 @@ COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 RUN pip install --no-cache-dir celery[redis] amqp redis celery==4.4.2
 RUN pip install --no-cache-dir Flask-Migrate
+RUN pip install --no-cache-dir Flask-Script
 RUN mkdir -p /main
 
 WORKDIR /main
 
 COPY ./dockerfiles/web/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+COPY ./dockerfiles/web/runserver.sh /runserver.sh
+RUN chmod +x /runserver.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

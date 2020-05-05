@@ -5,6 +5,7 @@ USER=user
 PASSWORD=password
 HOST=postgres
 PORT=5432
+FLASK_APP=web.py
 
 POSTGRES_URL=postgresql+psycopg2://user:password@postgres:5432/db
 REDIS_URL=redis://redis:6379/0

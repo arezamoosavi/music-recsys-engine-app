@@ -1,4 +1,5 @@
 #!/bin/sh
+#!/usr/bin/env bash
 
 set -o errexit
 set -o pipefail
@@ -15,9 +16,5 @@ then
 
     echo "PostgreSQL started"
 fi
-
-# flask db init
-# flask db migrate
-# flask db upgrade
 
 exec "$@"

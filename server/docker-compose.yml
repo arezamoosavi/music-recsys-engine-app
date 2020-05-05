@@ -18,13 +18,14 @@ services:
       - uploaded_files:/uploaded_files
     env_file:
       - ./.envs/.web
-    environment:
-      - FLASK_APP=web.py
+      - ./.envs/.gunicorn
     depends_on:
       - postgres
+      - celery
     links:
       - postgres
-    command: gunicorn -w 1 web:flask_app -b :5000 --access-logfile '-'
+    # command: gunicorn -w 1 web:flask_app -b :5000 --access-logfile '-'
+    command: sh /runserver.sh
     container_name: recsys_web_2
     restart: on-failure
     
@@ -87,8 +88,6 @@ services:
     command: celery worker -A utils.celery_tasks.main_app --loglevel=INFO
     env_file:
       - ./.envs/.web
-    environment:
-      - FLASK_APP=web.py
     volumes:
       - ./main:/main
     depends_on:

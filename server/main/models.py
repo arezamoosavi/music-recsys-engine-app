@@ -19,6 +19,19 @@ class MusicModel(db.Model):
     @classmethod
     def find_all(cls) -> List["MusicModel"]:
         return cls.query.all()
+   
+    @property
+    def serialized(self):
+        """Return object data in serializeable format"""
+        return {
+            'id': self.id,
+            'song': self.song,
+            'artist': self.artist,
+            'musics': self.musics,
+            'state': self.state,
+            'ip': self.ip,
+            'agent': self.agent,
+        }
 
     def save_to_db(self) -> None:
         db.session.add(self)

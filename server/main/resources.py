@@ -1,6 +1,6 @@
 import logging
 from flask_restful import Resource
-from flask import jsonify, request
+from flask import jsonify, request, json, make_response
 from utils.rec_handler import getMusic
 from utils.celery_tasks.tasks import async_recommend
 from models import MusicModel
@@ -54,3 +54,16 @@ class Recommend(Resource):
              }
     
         return jsonify(retJson)
+
+class SearchHistory(Resource):
+    def get(self):
+        
+        #get ip address
+        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+            ip_address=request.environ['REMOTE_ADDR']
+        else:
+            ip_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+
+        search_res = MusicModel.find_by_ip()
+
+        return jsonify({'data': [result.serialized for result in search_res]})
