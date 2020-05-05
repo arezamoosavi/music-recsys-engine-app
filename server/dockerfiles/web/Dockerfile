@@ -17,6 +17,8 @@ RUN pip install --no-cache-dir numpy==1.16.0 pandas==1.0.3
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
+RUN pip install --no-cache-dir faust faust[uvloop,fast,rocksdb,redis]
+
 RUN mkdir -p /main
 
 WORKDIR /main

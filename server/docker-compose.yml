@@ -18,6 +18,7 @@ services:
       - uploaded_files:/uploaded_files
     env_file:
       - ./.envs/.web
+      - ./.envs/.kafka
     depends_on:
       - postgres
     links:
@@ -54,4 +55,61 @@ services:
     depends_on:
       - web
     container_name: recsys_nginx_2
+    restart: on-failure
+
+  redis:
+    image: redis:5.0.5
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    command: [ "redis-server", "--protected-mode", "no" ]
+    hostname: redis
+    container_name: recsys_redis_2
+    restart: on-failure
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.0
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    expose:
+      - "2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    container_name: recsys_zk_2
+    restart: on-failure
+
+  kafka:
+    image: confluentinc/cp-kafka:5.2.0
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    expose:
+      - "9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    container_name: recsys_kafka_2
+    restart: on-failure
+
+  kafka-create-topics:
+    image: confluentinc/cp-kafka:5.2.0
+    depends_on:
+      - kafka
+    hostname: kafka-create-topics
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka:9092 1 20 && \
+                       kafka-topics --create --topic test --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                       sleep infinity'"
+    environment:
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+    container_name: recsys_kafka_topic_2
     restart: on-failure
