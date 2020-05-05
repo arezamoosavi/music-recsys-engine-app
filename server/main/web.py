@@ -4,6 +4,10 @@ from flask_restful import Api, Resource
 from resources import Recommend
 from db import db, DATABASE_URI
 from flask_migrate import Migrate
+from flask_admin import Admin 
+from flask_admin.contrib.sqla import ModelView
+from models import MusicModel
+
 
 flask_app = Flask(__name__)
 api = Api(flask_app)
@@ -23,6 +27,9 @@ migrate = Migrate(flask_app, db)
 def create_tables():
     db.create_all()
 
+#admin setup
+admin = Admin(flask_app)
+admin.add_view(ModelView(MusicModel, db.session))
 
 #endpoints
 api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:number>',
