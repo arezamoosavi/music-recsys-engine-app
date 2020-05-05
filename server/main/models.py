@@ -10,6 +10,7 @@ class MusicModel(db.Model):
     musics = db.Column(db.JSON(), nullable=True)
     state = db.Column(db.Boolean, default=False)
     ip = db.Column(db.String(), nullable=True)
+    agent = db.Column(db.String(), nullable=True)
 
     @classmethod
     def find_by_ip(cls, ip: str) -> "MusicModel":

@@ -36,9 +36,11 @@ class Recommend(Resource):
         else:
             ip_address=request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
         
+        #agent
+        user_agent = request.user_agent.string
 
         new_musics = MusicModel(song=song, artist=artist, musics=musics, 
-                                ip=ip_address, state=rec_success)
+                                state=rec_success, ip=ip_address, agent=user_agent)
         try:
             new_musics.save_to_db()
         except:
