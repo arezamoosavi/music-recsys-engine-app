@@ -4,16 +4,25 @@ from flask_restful import Api, Resource
 from resources import Recommend, SearchHistory
 from db import db, DATABASE_URI
 from ma import ma
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_admin import Admin 
 from flask_admin.contrib.sqla import ModelView
 from models import MusicModel
-from auth.resources import Login
+from auth.resources import Login, Logout
 from auth.models import UserModel, TokenModel
 
 
 flask_app = Flask(__name__)
 api = Api(flask_app)
+
+#auth
+login= LoginManager(flask_app)
+
+@login.user_loader
+def load_user(user_id):
+    return UserModel.find_by_id(_id=user_id)
+
 
 #set configs
 flask_app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY','1nd2')
@@ -46,3 +55,4 @@ api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:numbe
                             '/recommend/<string:song>')
 api.add_resource(SearchHistory, '/')
 api.add_resource(Login,'/login')
+api.add_resource(Logout,'/logout')

@@ -3,6 +3,7 @@ from flask_restful import Resource
 from flask import jsonify, request, json, make_response
 from functools import wraps
 from auth.models import UserModel
+from flask_login import login_user, current_user, logout_user
 
 
 #loging
@@ -39,9 +40,12 @@ def auth_required(f):
 
             user = UserModel.get_or_create(username=username,password=password)
             if user.check_password(password=password):
+
+                login_user(user)
+
                 return f(*args, **kwargs)
         
-        return make_response('wrong password!',401, {'WWW-Authenticate' : 'Basic realm="Login req"'})
+        return make_response('First Login!',401, {'WWW-Authenticate' : 'Basic realm="Login req"'})
     
     return decorated
 
@@ -51,3 +55,10 @@ class Login(Resource):
     @auth_required
     def get(self):
         return 'You are Loged in Successfully!'
+
+class Logout(Resource):
+
+    def get(self):
+        user = current_user.user
+        logout_user(user)
+        return 'You are Loged out Successfully!'
