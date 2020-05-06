@@ -1,7 +1,6 @@
 def load_data():
     import pandas as pd
-    return pd.read_csv('utils/spotify_data.csv')
-
+    return pd.read_csv('utils/spotify_data.csv',index_col=0)
 music_df = load_data()
 
 def look_for_song(df, name):
@@ -26,8 +25,10 @@ def getSongId(song, artist=None):
                 return artist_df.index.values[0]
     
 def getKMusic(scores, id, k):
-    sorted_scores = sorted(((value, index) for index, value in enumerate(scores) if index!=id), reverse=False)
-    return [sorted_scores[i][1] for i in range(k)]
+    
+    sorted_scores = sorted(((value, index) for value, index in scores if index!=id), reverse=False)
+    Ta = min(len(sorted_scores), k)
+    return [sorted_scores[i][1] for i in range(Ta)]
 
 def getDictResult(musics):
     res = []

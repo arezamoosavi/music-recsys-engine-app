@@ -17,13 +17,45 @@ def similarty(s1,s2):
     
     return difference
 
-def getMusic(song, artist=None, k=6):
+def dfFilterEnergy(df, id):
+    x = music_df.energy[id]
+    maax = 0.050
+    miin = 0.050
+    return df.loc[(df['energy'] > x-miin) & (df['energy'] < x+maax)]
+
+def dfFilterDance(df, id):
+    x = music_df.danceability[id]
+    maax = 0.050
+    miin = 0.050
+    return df.loc[(df['danceability'] > x-miin) & (df['danceability'] < x+maax)]
+
+def dfFilterLoud(df, id):
+    x = music_df.loudness[id]
+    maax = 0.50
+    miin = 0.50
+    return df.loc[(music_df['loudness'] > x-miin) & (df['loudness'] < x+maax)]
+
+def getNearSongListId(id):
+    df_enrg = dfFilterEnergy(music_df, id)
+    df_danc = dfFilterDance(df_enrg, id)
+    df_loud = dfFilterLoud(df_danc, id)
+    return df_loud.index.tolist()
+
+
+def getMusic(song, artist=None, k=5):
     id = getSongId(song=song, artist=artist)
     if id:
         list_of_score = []
-        for songid in range(music_df.shape[0]):
-            list_of_score.append(similarty(music_df.iloc[id],
-                                           music_df.iloc[songid]))            
+        
+        nearMusicList = getNearSongListId(id)
+        if len(nearMusicList) ==0:
+            return None, getMusicWithid(id)
+
+        for songid in nearMusicList:
+            
+            sim = similarty(music_df.iloc[id],music_df.iloc[songid])
+            songItem = (sim, songid)
+            list_of_score.append(songItem)            
         
         list_of_musicid = getKMusic(list_of_score, id, k)
         
@@ -32,4 +64,4 @@ def getMusic(song, artist=None, k=6):
         return rec_musics, getMusicWithid(id)
         
     else:
-        return None
+        return None, [song, artist]
