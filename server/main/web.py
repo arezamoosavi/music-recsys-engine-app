@@ -8,6 +8,8 @@ from flask_migrate import Migrate
 from flask_admin import Admin 
 from flask_admin.contrib.sqla import ModelView
 from models import MusicModel
+from auth.resources import Login
+from auth.models import UserModel, TokenModel
 
 
 flask_app = Flask(__name__)
@@ -34,6 +36,8 @@ def create_tables():
 #admin setup
 admin = Admin(flask_app)
 admin.add_view(ModelView(MusicModel, db.session))
+admin.add_view(ModelView(UserModel, db.session))
+admin.add_view(ModelView(TokenModel, db.session))
 
 #endpoints
 api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:number>',
@@ -41,3 +45,4 @@ api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:numbe
                             '/recommend/<string:song>/<string:artist>',
                             '/recommend/<string:song>')
 api.add_resource(SearchHistory, '/')
+api.add_resource(Login,'/login')
