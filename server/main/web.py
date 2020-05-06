@@ -4,9 +4,9 @@ from flask_restful import Api, Resource
 from resources import Recommend, SearchHistory
 from db import db, DATABASE_URI
 from ma import ma
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
-from flask_admin import Admin 
+from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from models import MusicModel
 from auth.resources import Login, Logout
@@ -43,10 +43,21 @@ def create_tables():
     db.create_all()
 
 #admin setup
-admin = Admin(flask_app)
-admin.add_view(ModelView(MusicModel, db.session))
-admin.add_view(ModelView(UserModel, db.session))
-admin.add_view(ModelView(TokenModel, db.session))
+class MyModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login'))
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+admin = Admin(flask_app, index_view=MyAdminIndexView())
+admin.add_view(MyModelView(MusicModel, db.session))
+admin.add_view(MyModelView(UserModel, db.session))
+admin.add_view(MyModelView(TokenModel, db.session))
 
 #endpoints
 api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:number>',

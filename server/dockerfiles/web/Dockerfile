@@ -23,6 +23,7 @@ RUN pip install --no-cache-dir flask-marshmallow==0.11.0 marshmallow \
         marshmallow-sqlalchemy
 RUN pip install --no-cache-dir sqlalchemy-migrate==0.7.2 
 RUN pip install --no-cache-dir Flask-Login==0.5.0
+RUN pip install --no-cache-dir PyJWT==1.7.1
 RUN mkdir -p /main
 
 WORKDIR /main

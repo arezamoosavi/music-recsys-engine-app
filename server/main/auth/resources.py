@@ -4,6 +4,7 @@ from flask import jsonify, request, json, make_response, url_for
 from functools import wraps
 from auth.models import UserModel
 from flask_login import login_user, current_user, logout_user, login_required
+import jwt
 
 
 #loging
