@@ -26,11 +26,11 @@ class UserModel(UserMixin, db.Model):
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
-        return cls.query.filter_by(username=username).first()
+        return cls.query.filter_by(username=username).one_or_none()
 
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
-        return cls.query.filter_by(id=_id).first()
+        return cls.query.filter_by(id=_id).one_or_none()
 
     @classmethod
     def create_admin(cls, username: str, password: str) -> "UserModel":

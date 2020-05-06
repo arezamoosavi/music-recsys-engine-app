@@ -1,9 +1,9 @@
 import logging
 from flask_restful import Resource
-from flask import jsonify, request, json, make_response
+from flask import jsonify, request, json, make_response, url_for
 from functools import wraps
 from auth.models import UserModel
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 #loging
@@ -38,12 +38,14 @@ def auth_required(f):
             username = auth.username
             password = auth.password
 
-            user = UserModel.get_or_create(username=username,password=password)
-            if user.check_password(password=password):
+            user = UserModel.find_by_username(username=username)
+            # user = UserModel.get_or_create(username=username,password=password)
+            if user & user.check_password(password=password):
 
                 login_user(user)
-
                 return f(*args, **kwargs)
+            else:
+                return make_response(url_for('login'))
         
         return make_response('First Login!',401, {'WWW-Authenticate' : 'Basic realm="Login req"'})
     
@@ -52,13 +54,14 @@ def auth_required(f):
 
 class Login(Resource):
 
-    @auth_required
-    def get(self):
-        return 'You are Loged in Successfully!'
+    def get(self, username, password):
+            user = UserModel.get_or_create(username=username,password=password)
+            login_user(user)
+            return 'You are logged in as {}'.format(current_user.username)
 
 class Logout(Resource):
 
+    @login_required
     def get(self):
-        user = current_user.user
-        logout_user(user)
+        logout_user()
         return 'You are Loged out Successfully!'

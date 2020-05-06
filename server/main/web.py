@@ -54,5 +54,5 @@ api.add_resource(Recommend, '/recommend/<string:song>/<string:artist>/<int:numbe
                             '/recommend/<string:song>/<string:artist>',
                             '/recommend/<string:song>')
 api.add_resource(SearchHistory, '/')
-api.add_resource(Login,'/login')
+api.add_resource(Login,'/login/<string:username>/<string:password>')
 api.add_resource(Logout,'/logout')
