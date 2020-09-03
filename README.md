@@ -59,6 +59,6 @@ Web: flask, postgre, nginx, gunicorn
 
 Build: docker, docker-compose
 
-## [Medium]
+## Medium
 ### [part1](https://medium.com/@sdamoosavi/music-recommender-web-service-ml-ef6fdd1fc026)
 ### [part2](https://medium.com/@sdamoosavi/music-recommender-web-service-flask-and-celery-a1274b488ab)
